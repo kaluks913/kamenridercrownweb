@@ -1,4 +1,4 @@
-仮面ライダーCROWN 官网原型 v0.1
+仮面ライダーCROWN 官网原型 v0.2
 
 【Windows 本地预览】
 双击 start-site.bat，浏览器会打开 http://localhost:4321
