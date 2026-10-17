@@ -18,6 +18,11 @@
 */
 
 window.CROWN_DATA = {
+  // 页面级可编辑文字：以后不必再去 HTML 里找写死的标题。
+  ui:{
+    monsterPageEnglish:'DREAMS',
+    riderPageEnglish:'RIDER / OTHER'
+  },
   /* =========================================================
      本周主页精选：每周更新最常改这里
      ========================================================= */
@@ -34,22 +39,22 @@ window.CROWN_DATA = {
     },
 
     // 首页只展示这里指定的人物，不会把人物库全部塞上来。
-    characterIds:['sato','yuriko','kuntai'],
+    characterIds:['moroboshi','ijima'],
 
     // 首页只展示这里指定的梦幻体。
-    monsterIds:['anger','wind'],
+    monsterIds:['happy'],
 
     // 首页道具同理；想展示几个就写几个。
     itemIds:['driver','king-core','knock-o'],
 
     // 首页 STORY 指向哪一集。
-    storyId:'ep01'
+    storyId:'ep02'
   },
 
   news: [
     { date:'2026.10.06', tag:'官网', text:'《假面骑士 Crown》官方网站开放' },
-    { date:'2026.10.06', tag:'故事', text:'第 01 集剧情页面公开' },
-    { date:'2026.10.06', tag:'骑士', text:'假面骑士 Crown 四种形态资料公开' },
+    { date:'2026.10.17', tag:'故事', text:'第 02 集剧情页面公开' },
+    { date:'2026.10.17', tag:'官网', text:'小说目前在刺猬猫/番茄/飞卢/起点同期连载' },
     { date:'2026.10.06', tag:'道具', text:'皇冠驱动器、捷能充芯与武器资料公开' }
   ],
 
@@ -72,7 +77,8 @@ window.CROWN_DATA = {
           full:'../assets/images/riders/crown/crown-base-full.png',
           head:'../assets/images/riders/crown/crown-base-head.png',
           call:'Volsaro KING！神秘之蛇！KAMEN RIDER CROWN！',
-          intro:'由皇冠驱动器与国王捷能充芯构筑的均衡形态。兼具攻防与机动性，在国际象棋体系中对应“国王”。',
+          intro:'由诸星勇志使用皇冠驱动器与国王捷能充芯构筑的均衡形态。兼具攻防与机动性，在国际象棋体系中对应“国王”。',
+          relations:[{section:'other', categoryId:'guardian', entityId:'tasm', formId:'base', label:'灵魄守护兽 塔斯木 / 基础形态'}],
           stats:[
             { label:'身高', value:'195.0 cm' },
             { label:'体重', value:'92.0 kg' },
@@ -81,7 +87,7 @@ window.CROWN_DATA = {
             { label:'跳跃力', value:'28.0 m' },
             { label:'跑速', value:'100 m / 5.6 s' }
           ],
-          abilities:[ '未知'],
+          abilities:[ '终焉必杀：骑士皇家审判（Rider Royal Sentence）可以将全部压缩能量灌注于腿中，裹挟大量泡沫踢向眼前的敌人，敌人被泡沫包裹在空中快速旋转，以消杀敌人。'],
           components:[
             { no:'01', name:'圣蛇之眼', text:'内置多功能成像系统，可捕捉周围范围内的灵魄能量波动。' },
             { no:'02', name:'王权护肩', text:'厚重的左右护肩内置灵魄能量稳压装置【深红宝石】，防止灵魄能量外泄，以保证最大强度释放力量。' },
@@ -163,7 +169,52 @@ window.CROWN_DATA = {
     }
   ],
 
+
+  /* =========================================================
+     骑士页“其他”分支
+     otherCategories = 其他资料的大类；目前先放灵魄守护兽。
+     others          = 具体对象；主体资料规格与 riders 一致，但每个形态可用 views 自定义图片数量与模式名称。
+     ========================================================= */
+  otherCategories:[
+    {id:'guardian', name:'灵魄守护兽', en:'PYSCH SOUL', published:true}
+  ],
+
+  others:[
+    {
+      id:'tasm', categoryId:'guardian', published:true, no:'G01',
+      name:'塔斯木', en:'TASM', catch:'与 Crown 缔结灵魂契约的灵魄守护兽。',
+      forms:[
+        {
+          id:'base', no:'01', name:'TASM', cn:'基础形态',
+          // 每个形态的视图数量与名称都可自由定义。
+          // 基础形态有蛇模式与摩托模式，因此显示切换按钮和左右箭头。
+          views:[
+            {label:'蛇模式', src:'../assets/images/others/tasm/tasm-base-snake.png'},
+            {label:'摩托模式', src:'../assets/images/others/tasm/tasm-base-bike.png'}
+          ],
+          intro:'灵魄守护兽塔斯木的基础形态。这里先保留与骑士资料完全相同的编辑规格，后续可直接填入正式设定。',
+          call:'',
+          stats:[
+            {label:'分类', value:'灵魄守护兽'},
+            {label:'契约对象', value:'诸星勇志 / Crown'}
+          ],
+          abilities:['灵魂契约：平常状态下，灵魄守护兽将以纯粹意识的方式存在于对象的脑内，和契约对象进行私密的心灵对话。', '变形能力：可以变为机械蛇/摩托双形态。'],
+          components:[
+            {no:'01',name:'幻晶护盾',text:'可以防弹、防风压的额头盔甲。假面骑士Crown骑乘时，它可以隔绝高时速下的风压，保护骑士的视野。'},
+            {no:'02',name:'灵魄蛇脑',text:'金色神秘金属覆盖的蛇形车头，当塔斯木被召唤出时，它的意识会通过这一装备转移到实体中。除了具备思考和沟通的能力，还可以作为坚硬的头壳进行冲撞。'},
+            {no:'03',name:'高分子轮胎',text:'抓地力极强，且不受地形限制的双轮。在变形成蛇形态时，前后轮会向内收拢并悬浮，轮胎表面的橡胶会像蛇鳞一样片片立起，用于在地面或墙壁上静音滑行。'},
+            {no:'04',name:'喷射牙舌',text:'用于进攻的毒牙和用于探测附近情绪能量的长舌，舌苔上附着了可以喷射出蓝白色泡沫的腺体结构，紧急情况下可喷射出包裹住敌人的束缚泡沫。'},
+            {no:'05',name:'蓝鳞翘尾',text:'高速行驶时提供下压力，保持平衡。在蛇形态下，这部分会彻底舒展，变成一条强韧的机械长尾，能像鞭子一样抽碎怪人，或者用来缠绕敌人。'}
+          ],
+          relations:[{section:'rider', riderId:'crown', formId:'base', label:'假面骑士 Crown / 基础形态'}]
+        }
+      ]
+    }
+  ],
+
   characters:[
+    {id:'moroboshi', published:true, name:'诸星勇志', en:'MOROBOSHI YUJI', image:'../assets/images/characters/moroboshi-yuji.jpg', intro:'《假面骑士Crown》的主人公。被灵魄守护兽塔斯木选中后，拥有成为假面骑士Crown的力量。'},
+    {id:'ijima', published:true, name:'饭岛健一', en:'IJIMA KENICHI', image:'../assets/images/characters/ijima-kenichi.jpg', intro:'中央新闻社的现役记者，诸星勇志的好友。被梦幻体的力量所侵蚀。'},
     {id:'sato', published:true, name:'佐藤久间', en:'SATO KUMA', image:'../assets/images/characters/sato-kuma.jpg', intro:'上杉百合子的恋人。百合子突然死亡后，他被卷入围绕林野财团发生的一系列事件，并在巨大的悲愤中发生异变。'},
     {id:'yuriko', published:true, name:'上杉百合子', en:'UESUGI YURIKO', image:'../assets/images/characters/uesugi-yuriko.jpg', intro:'林野财团公关部门员工。关注底层居住区住宅项目，却在悦海酒店突然死亡。'},
     {id:'kuntai', published:true, name:'林野坤泰', en:'HAYASHINO KUNTAI', image:'../assets/images/characters/hayashino-kuntai.jpg', intro:'林野财团现任继承人。曾承诺推动底层居住区的新住宅建设计划。'}
@@ -175,13 +226,16 @@ window.CROWN_DATA = {
      注意：隐藏并不等于防剧透，未公开名称最好不要提前写入公开站源码。
      ========================================================= */
   monsterCategories:[
-    {id:'anger', name:'愤怒', en:'ANGER', published:true}
+    {id:'anger', name:'愤怒', en:'ANGER', published:true},
+    {id:'happy', name:'愉悦', en:'HAPPY', published:true}
+
     // 以后公开时再增加：愉悦 / 恐惧 / 悲伤 / 执政官 / 其他……
   ],
 
   monsters:[
     {id:'anger', categoryId:'anger', published:true, no:'001', name:'愤怒梦幻体', en:'ANGER DREAMS', image:'../assets/images/monsters/anger-dream-phantom.png', intro:'由强烈愤怒所催生的梦幻体，其能力与宿主不断膨胀的愤怒情绪紧密相连。'},
-    {id:'wind', categoryId:'anger', published:true, no:'002', name:'狂风梦幻体', en:'KAZE DREAMS', image:'../assets/images/monsters/wind-dream-phantom.png', intro:'能够操纵风元素的梦幻体，由佐藤久间变身而成,可以使用风弹进行攻击。'}
+    {id:'wind', categoryId:'anger', published:true, no:'002', name:'狂风梦幻体', en:'KAZE DREAMS', image:'../assets/images/monsters/wind-dream-phantom.png', intro:'能够操纵风元素的梦幻体，由佐藤久间变身而成,可以使用风弹进行攻击。'},
+    {id:'happy', categoryId:'happy', published:true, no:'001', name:'愉悦梦幻体', en:'HAPPY DREAMS', image:'../assets/images/monsters/happy-dream-phantom.png', intro:'由强烈愉悦所催生的梦幻体，其能力与宿主不断膨胀的愉悦情绪紧密相连。'},
   ],
 
   items:[
@@ -192,7 +246,7 @@ window.CROWN_DATA = {
     {id:'kaze-core', category:'捷能充芯', name:'狂风捷能充芯', en:'KAZE ENERGENCY CHARGE', image:'../assets/images/items/kaze-charge-core.png', intro:'狂风游侠形态对应的捷能充芯。', relatedToys:[]},
     {id:'knock-core', category:'捷能充芯', name:'击倒拳铳武器充芯', en:'KNOCK-O ENERGENCY CHARGE', image:'../assets/images/items/knock-charge-core.png', intro:'能够召唤武器【击倒拳铳】的捷能充芯。', relatedToys:[]},
     {id:'land-core', category:'捷能充芯', name:'？？？捷能充芯', en:'ENERGENCY CHARGE', image:'../assets/images/items/land-charge-core.png', intro:'神秘人获得的捷能充芯。', relatedToys:[]},
-    {id:'knock-o', category:'武器', name:'击倒拳铳', en:'KNOCK-O', image:'../assets/images/items/weapons/knock-o.png', intro:'Crown 的初始二用型武器，可在拳模式与铳模式之间切换。', relatedToys:[]}
+    {id:'knock-o', category:'武器', name:'击倒拳铳', en:'KNOCK-O', image:'../assets/images/items/weapons/knock-o.png', intro:'Crown 的初始二用型武器，可在拳模式与铳模式之间切换。', relatedToys:['knock-o-set']}
   ],
 
   toys:[
@@ -201,6 +255,12 @@ window.CROWN_DATA = {
       package:'toys/crown-driver-package.jpg', intro:'皇冠驱动器与国王捷能充芯组成的变身腰带套装。',
       includedItems:['driver','king-core'],
       manuals:['manuals/crown-driver/01.jpg','manuals/crown-driver/02.jpg','manuals/crown-driver/03.jpg']
+    },
+    {
+      id:'knock-o-set', name:'DX 击倒拳铳', en:'DX KNOCK-O', category:'武器',
+      package:'toys/knock-o-package.jpg', intro:'假面骑士Crown初始的武器和召唤武器的捷能充芯。',
+      includedItems:['knock-o','knock-core'],
+      manuals:['manuals/knock-o/01.jpg','manuals/knock-o/02.jpg','manuals/knock-o/03.jpg']
     }
   ],
 
@@ -220,7 +280,30 @@ window.CROWN_DATA = {
         { type:'paragraph', html:'<strong>——关于“主角骑士最后才登场”的叙述诡计。</strong> <br>与其说是骗观众，不如说是视点诱导。第一话几乎所有信息都经过佐藤的情绪过滤。观众会自然以为，这是一个“被夺走一切的男人觉醒力量复仇”的故事。<br>所以第一话的结构，请允许我称为“让怪人先登场，让骑士最后敲门”。如果Crown先出现，那么这只是个平平无奇的小故事。<br> 可如果先让观众对佐藤共情，才会让Crown的审判更有重量。' },
         { type:'divider' },
         { type:'callout', title:'对观众说的话', html:'接下来，还请大家继续关注假面骑士Crown的后续内容，更多真相将会在后续的集数中慢慢揭晓。' },
-        { type:'paragraph', html:'<em>作者：KALUKS</em>' }
+        { type:'paragraph', html:'<em>作者：一文字英雄</em>' }
+      ],
+
+      // 旧字段保留兼容；当 content 不存在或为空时，网页才会读取下面两项。
+      columnTitle:'第 01 集补充文章',
+      column:'本页的小作文、设定补充与作者文章都放在 STORY 内。之后每周新增一集对象即可，首页通过 home.storyId 决定本周展示哪一集。'
+    },
+    {
+      id:'ep02', episode:'02', title:'起源·FIRST EXPERIENCE', date:'2026.10.17',
+      image:'../assets/images/story/ep02/episode-02.jpg',
+      summary:'技术修复员诸星勇志发现挚友饭岛健一被“幸运系统”侵蚀、逐渐变成另一个人后，从守护兽塔斯木手中获得皇冠驱动器，变身假面骑士Crown，殊不知自己卷入了更大的阴谋......',
+
+      // STORY 富文本正文：顺序就是网页显示顺序。每一集的块数量、类型都可以完全不同。
+      // paragraph 的 html 支持 <strong>加粗</strong>、<em>斜体</em>、<br>换行。
+      content:[
+        { type:'guide', title:'人物关系', src:'../assets/images/story/ep02/guide.jpg' },
+        { type:'heading', text:'作者想说' },
+        { type:'paragraph', html:'<strong>距离我创造的最初的假面骑士Crown，已经过去了十年。</strong> <br>关于假面骑士Crown，他最初是我由2015年创造的假面骑士，并于2016年发布于社交媒体的形象。<br>作为我第一次尝试制作的原创企划，我当时对这孩子无比上心。不过因为各方面都不成熟，最终端上来的作品并不理想。<br> 如今我已经沉淀了10年有余,自认是时候了，是时候要把它重置了，所以如大家所见，它来了。' },
+        
+        { type:'divider' },
+        { type:'paragraph', html:'<strong>假面骑士Crown真正的起源回。</strong> <br>上一集故事聚焦于一个普通人成为梦幻体的全过程，而这集才是真正属于Crown的起源回。<br>关于梦幻体，作为情绪扭曲的恐怖怪物，我想要感谢至高赞词为我奠定的设计基调。<br> 除此以外，还有一些来自其他大佬设计的梦幻体，未来的集数中也会披露。' },
+        { type:'divider' },
+        { type:'callout', title:'对观众说的话', html:'接下来，还请大家继续关注假面骑士Crown的后续内容，更多真相将会在后续的集数中慢慢揭晓。今后可能会从四个小说平台中选择其一签约，这就要看这部作品在不同平台具体的人气差别了。' },
+        { type:'paragraph', html:'<em>作者：一文字英雄</em>' }
       ],
 
       // 旧字段保留兼容；当 content 不存在或为空时，网页才会读取下面两项。

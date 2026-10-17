@@ -58,42 +58,121 @@ function home(){
 function rider(){
   const root=$('#rider-root'); if(!root)return;
   const riders=(D.riders||[]).filter(isPublished);
-  const riderTabs=$('#rider-tabs');
+  const others=(D.others||[]).filter(isPublished);
+  const otherCategories=(D.otherCategories||[]).filter(c=>isPublished(c) && others.some(o=>o.categoryId===c.id));
+  const sectionTabs=$('#rider-section-tabs');
+  const categoryTabs=$('#rider-category-tabs');
+  const entityTabs=$('#rider-tabs');
   const formTabs=$('#form-tabs');
   const title=$('#rider-title');
-  if(!riders.length){root.innerHTML='<p>目前没有公开的骑士资料。</p>';return;}
+  const pageEn=$('#rider-page-en');
+  if(pageEn) pageEn.textContent=D.ui?.riderPageEnglish||'RIDER / OTHER';
+
+  if(!riders.length && !others.length){root.innerHTML='<p>目前没有公开资料。</p>';return;}
 
   const params=new URLSearchParams(location.search);
-  let currentRider=riders.find(r=>r.id===params.get('rider'))||riders[0];
+  let section=params.get('section')==='other' && others.length ? 'other' : 'rider';
+  if(section==='rider' && !riders.length) section='other';
 
-  function renderRiderTabs(){
-    riderTabs.innerHTML=riders.map(r=>`<button class="rider-tab ${r.id===currentRider.id?'active':''}" data-rider="${r.id}"><span>${r.no||''}</span>${r.name}</button>`).join('');
-    if(title) title.textContent=currentRider.en;
+  let currentCategory=otherCategories.find(c=>c.id===params.get('category'))||otherCategories[0];
+  let currentEntity = section==='rider'
+    ? (riders.find(r=>r.id===params.get('rider'))||riders[0])
+    : (others.find(o=>o.id===params.get('entity') && (!currentCategory || o.categoryId===currentCategory.id)) || others.find(o=>!currentCategory || o.categoryId===currentCategory.id) || others[0]);
+
+  const relHref=rel=>{
+    if(rel.section==='other') return `?section=other&category=${encodeURIComponent(rel.categoryId||'')}&entity=${encodeURIComponent(rel.entityId||'')}#${encodeURIComponent(rel.formId||'base')}`;
+    return `?section=rider&rider=${encodeURIComponent(rel.riderId||'')}#${encodeURIComponent(rel.formId||'base')}`;
+  };
+
+  function currentEntities(){
+    if(section==='rider') return riders;
+    return others.filter(o=>!currentCategory || o.categoryId===currentCategory.id);
+  }
+
+  function renderSectionTabs(){
+    const opts=[];
+    if(riders.length) opts.push({id:'rider',name:'骑士',en:'RIDER'});
+    if(others.length) opts.push({id:'other',name:'其他',en:'OTHER'});
+    sectionTabs.innerHTML=opts.map(o=>`<button class="section-tab ${section===o.id?'active':''}" data-section="${o.id}">${o.name}<small>${o.en}</small></button>`).join('');
+  }
+
+  function renderCategoryTabs(){
+    if(section!=='other' || !otherCategories.length){categoryTabs.innerHTML='';categoryTabs.hidden=true;return;}
+    categoryTabs.hidden=false;
+    categoryTabs.innerHTML=otherCategories.map(c=>`<button class="other-category-tab ${currentCategory?.id===c.id?'active':''}" data-other-category="${c.id}">${c.name}<small>${c.en}</small></button>`).join('');
+  }
+
+  function renderEntityTabs(){
+    const list=currentEntities();
+    if(!list.length){entityTabs.innerHTML='';return;}
+    if(!list.includes(currentEntity)) currentEntity=list[0];
+    entityTabs.innerHTML=list.map(e=>`<button class="rider-tab ${e.id===currentEntity.id?'active':''}" data-entity="${e.id}"><span>${e.no||''}</span>${e.name}<small>${e.en||''}</small></button>`).join('');
+    if(title) title.textContent=currentEntity.en||currentEntity.name;
   }
 
   function renderFormTabs(){
-    formTabs.innerHTML=currentRider.forms.map(f=>`<button class="form-tab" data-id="${f.id}">${f.no} ${f.cn}</button>`).join('');
+    const forms=currentEntity?.forms||[];
+    formTabs.innerHTML=forms.map(f=>`<button class="form-tab" data-id="${f.id}">${f.no||''} ${f.cn||f.name||''}</button>`).join('');
   }
 
   function renderForm(id){
-    const f=currentRider.forms.find(x=>x.id===id)||currentRider.forms[0];
+    const forms=currentEntity?.forms||[];
+    const f=forms.find(x=>x.id===id)||forms[0];
+    if(!f){root.innerHTML='<p>该对象暂时没有公开形态资料。</p>';return;}
     $$('.form-tab',formTabs).forEach(b=>b.classList.toggle('active',b.dataset.id===f.id));
+    const relations=(f.relations||[]);
+    const relationHtml=relations.length?`<section class="rider-info-block relation-block"><h3>关联对象</h3><div class="relation-links">${relations.map(rel=>`<a class="relation-card" href="${relHref(rel)}"><span>${rel.section==='other'?'OTHER':'RIDER'}</span><b>${rel.label||'查看关联资料'}</b><i>→</i></a>`).join('')}</div></section>`:'';
+    const callHtml=f.call?`<blockquote>${f.call}</blockquote>`:'';
+    const stats=(f.stats||[]).map(s=>`<div class="stat"><b>${s.label}</b>${s.value}</div>`).join('');
+    const abilities=(f.abilities||[]).map(a=>`<li>${a}</li>`).join('');
+    const components=(f.components||[]).map(c=>`<div class="component-row"><strong>${c.no}</strong><div><b>${c.name}</b><p>${c.text}</p></div></div>`).join('');
+    const sectionLabel=section==='rider'?'骑士资料':(currentCategory?.name||'其他资料');
+    const legacyViews=[
+      f.full?{label:'全身设定',src:f.full,alt:`${f.cn||f.name} 全身设定图`}:null,
+      f.head?{label:'头部特写',src:f.head,alt:`${f.cn||f.name} 头部特写`}:null
+    ].filter(Boolean);
+    const views=(f.views&&f.views.length?f.views:legacyViews).filter(v=>v&&v.src);
+    const hasMultipleViews=views.length>1;
+    const visualHtml=views.length?`<div class="image-switcher ${hasMultipleViews?'':'single-view'}" data-index="0"><div class="image-stage">${views.map((v,i)=>`<img src="${v.src}" alt="${v.alt||((f.cn||f.name)+' '+(v.label||'设定图'))}" class="switch-image ${i===0?'active':''}">`).join('')}</div>${hasMultipleViews?`<button class="image-arrow prev" aria-label="上一张">‹</button><button class="image-arrow next" aria-label="下一张">›</button><div class="image-dots">${views.map((v,i)=>`<button class="dot ${i===0?'active':''}">${v.label||('视图 '+(i+1))}</button>`).join('')}</div>`:''}</div>`:`<div class="image-empty">设定图暂未公开。</div>`;
     root.innerHTML=`
-      <div class="rider-visual-panel"><div class="image-switcher" data-index="0"><div class="image-stage"><img src="${f.full}" alt="${f.cn} 全身设定图" class="switch-image active"><img src="${f.head}" alt="${f.cn} 头部特写" class="switch-image"></div><button class="image-arrow prev" aria-label="上一张">‹</button><button class="image-arrow next" aria-label="下一张">›</button><div class="image-dots"><button class="dot active">全身设定</button><button class="dot">头部特写</button></div></div></div>
-      <div class="rider-copy-panel"><div class="big-no">${f.no}</div><span class="eyebrow">${currentRider.name} / 形态资料</span><h2 class="form-name">${f.name}</h2><h3>${f.cn}</h3><p class="form-intro">${f.intro}</p><blockquote>${f.call}</blockquote><div class="stats">${f.stats.map(s=>`<div class="stat"><b>${s.label}</b>${s.value}</div>`).join('')}</div><section class="rider-info-block"><h3>能力总览</h3><ul>${f.abilities.map(a=>`<li>${a}</li>`).join('')}</ul></section><section class="rider-info-block"><h3>身体结构 / 编号部件</h3><div class="component-list">${f.components.map(c=>`<div class="component-row"><strong>${c.no}</strong><div><b>${c.name}</b><p>${c.text}</p></div></div>`).join('')}</div></section></div>`;
-    setupImageSwitcher($('.image-switcher',root));
-    const url=new URL(location.href); url.searchParams.set('rider',currentRider.id); url.hash=f.id; history.replaceState(null,'',url);
+      <div class="rider-visual-panel">${visualHtml}</div>
+      <div class="rider-copy-panel"><div class="big-no">${f.no||currentEntity.no||''}</div><span class="eyebrow">${currentEntity.name} / ${sectionLabel}</span><h2 class="form-name">${f.name||currentEntity.en||''}</h2><h3>${f.cn||''}</h3><p class="form-intro">${f.intro||''}</p>${callHtml}<div class="stats">${stats}</div><section class="rider-info-block"><h3>能力总览</h3><ul>${abilities||'<li>资料暂未公开。</li>'}</ul></section><section class="rider-info-block"><h3>身体结构 / 编号部件</h3><div class="component-list">${components||'<p>资料暂未公开。</p>'}</div></section>${relationHtml}</div>`;
+    const switcher=$('.image-switcher',root); if(switcher) setupImageSwitcher(switcher);
+    const url=new URL(location.href);
+    url.searchParams.set('section',section);
+    if(section==='rider'){
+      url.searchParams.set('rider',currentEntity.id);
+      url.searchParams.delete('category'); url.searchParams.delete('entity');
+    }else{
+      if(currentCategory) url.searchParams.set('category',currentCategory.id);
+      url.searchParams.set('entity',currentEntity.id);
+      url.searchParams.delete('rider');
+    }
+    url.hash=f.id; history.replaceState(null,'',url);
   }
 
-  riderTabs.onclick=e=>{
-    const b=e.target.closest('[data-rider]'); if(!b)return;
-    currentRider=riders.find(r=>r.id===b.dataset.rider)||riders[0];
-    renderRiderTabs(); renderFormTabs(); renderForm(currentRider.forms[0]?.id);
+  sectionTabs.onclick=e=>{
+    const b=e.target.closest('[data-section]'); if(!b)return;
+    section=b.dataset.section;
+    if(section==='rider') currentEntity=riders[0];
+    else {currentCategory=otherCategories[0]; currentEntity=others.find(o=>o.categoryId===currentCategory?.id)||others[0];}
+    renderSectionTabs();renderCategoryTabs();renderEntityTabs();renderFormTabs();renderForm(currentEntity?.forms?.[0]?.id);
+  };
+  categoryTabs.onclick=e=>{
+    const b=e.target.closest('[data-other-category]'); if(!b)return;
+    currentCategory=otherCategories.find(c=>c.id===b.dataset.otherCategory)||otherCategories[0];
+    currentEntity=others.find(o=>o.categoryId===currentCategory?.id)||others[0];
+    renderCategoryTabs();renderEntityTabs();renderFormTabs();renderForm(currentEntity?.forms?.[0]?.id);
+  };
+  entityTabs.onclick=e=>{
+    const b=e.target.closest('[data-entity]'); if(!b)return;
+    currentEntity=currentEntities().find(x=>x.id===b.dataset.entity)||currentEntities()[0];
+    renderEntityTabs();renderFormTabs();renderForm(currentEntity?.forms?.[0]?.id);
   };
   formTabs.onclick=e=>{const b=e.target.closest('button[data-id]'); if(b)renderForm(b.dataset.id)};
-  renderRiderTabs(); renderFormTabs(); renderForm(location.hash.slice(1)||currentRider.forms[0]?.id);
-}
 
+  renderSectionTabs();renderCategoryTabs();renderEntityTabs();renderFormTabs();renderForm(location.hash.slice(1)||currentEntity?.forms?.[0]?.id);
+}
 function setupImageSwitcher(root){
   if(!root)return;
   const imgs=$$('.switch-image',root), dots=$$('.dot',root); let i=0;
@@ -110,6 +189,7 @@ function characterList(){
 
 function monsters(){
   const root=$('#monster-list'); if(!root)return;
+  const pageEn=$('#monster-page-en'); if(pageEn) pageEn.textContent=D.ui?.monsterPageEnglish||'DREAMS';
   const categories=(D.monsterCategories||[]).filter(c=>isPublished(c) && (D.monsters||[]).some(m=>isPublished(m)&&m.categoryId===c.id));
   if(!categories.length){root.innerHTML='<p>目前没有公开的梦幻体资料。</p>';return;}
   const tabs=$('#monster-tabs');

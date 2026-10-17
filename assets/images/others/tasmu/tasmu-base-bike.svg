@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900">
+  <rect width="900" height="900" fill="none"/>
+  <g fill="none" stroke="#0b6fd3" stroke-width="8" opacity=".55">
+    <circle cx="450" cy="430" r="270"/>
+    <path d="M250 610 L450 170 L650 610 Z"/>
+  </g>
+  <text x="450" y="440" text-anchor="middle" font-family="Arial,sans-serif" font-size="72" font-weight="900" fill="#0b6fd3">TASMU</text>
+  <text x="450" y="520" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" fill="#444">HEAD IMAGE PLACEHOLDER</text>
+</svg>
