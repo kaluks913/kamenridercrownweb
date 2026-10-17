@@ -192,7 +192,7 @@ window.CROWN_DATA = {
             {label:'蛇模式', src:'../assets/images/others/tasm/tasm-base-snake.png'},
             {label:'摩托模式', src:'../assets/images/others/tasm/tasm-base-bike.png'}
           ],
-          intro:'灵魄守护兽塔斯木的基础形态。这里先保留与骑士资料完全相同的编辑规格，后续可直接填入正式设定。',
+          intro:'灵魄守护兽塔斯木的基础形态。通过和契约对象心意相通实体化诞生的存在。',
           call:'',
           stats:[
             {label:'分类', value:'灵魄守护兽'},
@@ -298,9 +298,10 @@ window.CROWN_DATA = {
         { type:'guide', title:'人物关系', src:'../assets/images/story/ep02/guide.jpg' },
         { type:'heading', text:'作者想说' },
         { type:'paragraph', html:'<strong>距离我创造的最初的假面骑士Crown，已经过去了十年。</strong> <br>关于假面骑士Crown，他最初是我由2015年创造的假面骑士，并于2016年发布于社交媒体的形象。<br>作为我第一次尝试制作的原创企划，我当时对这孩子无比上心。不过因为各方面都不成熟，最终端上来的作品并不理想。<br> 如今我已经沉淀了10年有余,自认是时候了，是时候要把它重置了，所以如大家所见，它来了。' },
-        
+        { type:'image', src:'../assets/images/story/ep02/10years.jpg', label:'', caption:'和2016版本的差别。', wide:true },
         { type:'divider' },
         { type:'paragraph', html:'<strong>假面骑士Crown真正的起源回。</strong> <br>上一集故事聚焦于一个普通人成为梦幻体的全过程，而这集才是真正属于Crown的起源回。<br>关于梦幻体，作为情绪扭曲的恐怖怪物，我想要感谢至高赞词为我奠定的设计基调。<br> 除此以外，还有一些来自其他大佬设计的梦幻体，未来的集数中也会披露。' },
+        { type:'image', src:'../assets/images/story/ep02/bdreams.jpg', label:'', caption:'愤怒和愉悦梦幻体的设计原稿 by 至高赞词。', wide:true },
         { type:'divider' },
         { type:'callout', title:'对观众说的话', html:'接下来，还请大家继续关注假面骑士Crown的后续内容，更多真相将会在后续的集数中慢慢揭晓。今后可能会从四个小说平台中选择其一签约，这就要看这部作品在不同平台具体的人气差别了。' },
         { type:'paragraph', html:'<em>作者：一文字英雄</em>' }
