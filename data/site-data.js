@@ -125,6 +125,7 @@ window.CROWN_DATA = {
           head:'../assets/images/riders/crown/crown-sabaku-head.png',
           call:'Volsaro SABAKU！白色浪人！SABAKU CROWN！',
           intro:'使用沙漠捷能充芯变身。能够操纵具备腐蚀性的白色沙尘，并以轻量装甲提升机动性。',
+          relations:[{section:'other', categoryId:'guardian', entityId:'tasm', formId:'sabaku', label:'灵魄守护兽 塔斯木 / 沙漠形态'}],
           equipment:{users:['moroboshi'], transformation:['sabaku-core'], weapons:['knock-o']},
           stats:[
             {label:'身高',value:'195.0 cm'}, {label:'体重',value:'89.0 kg'},
