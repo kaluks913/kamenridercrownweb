@@ -3,6 +3,49 @@ const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const isPublished=x=>x && x.published!==false;
 const cleanHomePath=p=>(p||'').replace(/^\.\.\//,'');
+const escHtml=s=>String(s??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
+const logoDef=id=>(id&&D.logos&&D.logos[id])||null;
+const markPath=x=>x?.logo||(x?.logoId?logoDef(x.logoId)?.src:'')||'';
+const markAlt=x=>x?.logoAlt||(x?.logoId?logoDef(x.logoId)?.alt:'')||'';
+const markHtml=(x,type,cls='entity-mark')=>{const src=markPath(x);return src?`<img class="${cls}" src="${src}" alt="${escHtml(markAlt(x))}">`:''};
+const thumbPath=x=>x?.thumb||x?.thumbnail||x?.image||'';
+const detailImagePath=x=>x?.detailImage||x?.image||x?.thumb||'';
+const identityLogoHtml=x=>{const src=markPath(x);return src?`<div class="identity-logo-box"><img src="${src}" alt="${escHtml(markAlt(x))}"></div>`:''};
+const riderFormHref=(riderId,formId)=>`../rider/index.html?section=rider&rider=${encodeURIComponent(riderId)}#${encodeURIComponent(formId||'base')}`;
+const itemDetailHref=id=>`../item/detail.html?id=${encodeURIComponent(id)}`;
+const characterDetailHref=id=>`../character/detail.html?id=${encodeURIComponent(id)}`;
+const monsterDetailHref=id=>`../monster/detail.html?id=${encodeURIComponent(id)}`;
+function itemById(id){return (D.items||[]).find(x=>x.id===id)}
+function characterById(id){return (D.characters||[]).find(x=>x.id===id)}
+function monsterById(id){return (D.monsters||[]).find(x=>x.id===id)}
+function categoryById(id){return (D.monsterCategories||[]).find(x=>x.id===id)}
+function relationCard(href,kicker,title,mark=''){return `<a class="relation-text-link" href="${href}"><span>${title||kicker||'查看关联资料'}</span><i>↗</i></a>`}
+const formLinkLabel=(r,f)=>f?.linkLabel||r?.linkLabel||r?.name||f?.cn||f?.name||'查看骑士资料';
+function autoItemOwners(itemId){
+  const out=[];
+  (D.riders||[]).filter(isPublished).forEach(r=>(r.forms||[]).forEach(f=>{
+    const e=f.equipment||{};
+    const all=[...(e.transformation||[]),...(e.weapons||[]),...(e.items||[])];
+    if(all.includes(itemId)) out.push({type:'rider',rider:r,form:f});
+  }));
+  return out;
+}
+function autoCharacterRiders(charId){
+  const out=[];
+  (D.riders||[]).filter(isPublished).forEach(r=>(r.forms||[]).forEach(f=>{
+    if((f.equipment?.users||[]).includes(charId)) out.push({rider:r,form:f});
+  }));
+  return out;
+}
+function autoCharacterMonsters(charId){
+  return (D.monsters||[]).filter(m =>
+    isPublished(m) &&
+    (
+      (m.hostIds||[]).includes(charId) ||
+      m.hostId===charId
+    )
+  );
+}
 
 function header(){
   const h=$('.site-header'); if(!h)return;
@@ -21,19 +64,19 @@ function home(){
   const charRoot=$('#characters');
   if(charRoot){
     const chars=byIds(D.characters,H.characterIds);
-    charRoot.innerHTML=chars.map(c=>`<a class="card" href="character/index.html#${c.id}"><img class="card-image" src="${cleanHomePath(c.image)}" alt="${c.name}"><div class="card-body"><span class="eyebrow">人物</span><h3>${c.name}</h3><p>${c.en}</p></div></a>`).join('');
+    charRoot.innerHTML=chars.map(c=>`<a class="card" href="character/detail.html?id=${encodeURIComponent(c.id)}"><img class="card-image" src="${cleanHomePath(thumbPath(c))}" alt="${c.name}"><div class="card-body"><span class="eyebrow">人物</span><h3>${c.name}</h3><p>${c.en}</p></div></a>`).join('');
   }
 
   const monsterRoot=$('#monsters');
   if(monsterRoot){
     const mons=byIds(D.monsters,H.monsterIds);
-    monsterRoot.innerHTML=mons.map(m=>`<a class="card monster-card" href="monster/index.html#${m.id}"><img class="card-image" src="${cleanHomePath(m.image)}" alt="${m.name}"><div class="card-body"><span class="eyebrow">梦幻体 No.${m.no}</span><h3>${m.name}</h3><p>${m.en}</p></div></a>`).join('');
+    monsterRoot.innerHTML=mons.map(m=>`<a class="card monster-card" href="monster/detail.html?id=${encodeURIComponent(m.id)}"><img class="card-image" src="${cleanHomePath(thumbPath(m))}" alt="${m.name}"><div class="card-body"><span class="eyebrow">梦幻体 No.${m.no}</span><h3>${m.name}</h3><p>${m.en}</p></div></a>`).join('');
   }
 
   const itemRoot=$('#item-preview');
   if(itemRoot){
     const items=byIds(D.items,H.itemIds);
-    itemRoot.innerHTML=items.map(x=>`<a class="item-preview-card" href="item/index.html#${x.id}"><img src="${cleanHomePath(x.image)}" alt="${x.name}"><div><span class="eyebrow">${x.category}</span><h3>${x.name}</h3><p>${x.en}</p></div></a>`).join('');
+    itemRoot.innerHTML=items.map(x=>`<a class="item-preview-card" href="item/detail.html?id=${encodeURIComponent(x.id)}"><img src="${cleanHomePath(x.image)}" alt="${x.name}"><div><span class="eyebrow">${x.category}</span><h3>${x.name}</h3><p>${x.en}</p></div></a>`).join('');
   }
 
   const rf=H.riderFeature;
@@ -121,7 +164,12 @@ function rider(){
     if(!f){root.innerHTML='<p>该对象暂时没有公开形态资料。</p>';return;}
     $$('.form-tab',formTabs).forEach(b=>b.classList.toggle('active',b.dataset.id===f.id));
     const relations=(f.relations||[]);
-    const relationHtml=relations.length?`<section class="rider-info-block relation-block"><h3>关联对象</h3><div class="relation-links">${relations.map(rel=>`<a class="relation-card" href="${relHref(rel)}"><span>${rel.section==='other'?'OTHER':'RIDER'}</span><b>${rel.label||'查看关联资料'}</b><i>→</i></a>`).join('')}</div></section>`:'';
+    const relationHtml=`<section class="rider-info-block relation-block"><h3>关联对象</h3><div class="relation-links">${relations.length?relations.map(rel=>relationCard(relHref(rel),'',rel.label||'查看关联资料')).join(''):'<span class="relation-empty">无</span>'}</div></section>`;
+    const eq=f.equipment||{};
+    const transformItems=(eq.transformation||[]).map(itemById).filter(Boolean);
+    const weaponItems=(eq.weapons||[]).map(itemById).filter(Boolean);
+    const userChars=(eq.users||[]).map(characterById).filter(Boolean);
+    const equipmentHtml=(transformItems.length||weaponItems.length||userChars.length)?`<section class="rider-info-block equipment-block"><h3>装备 / 使用者</h3>${userChars.length?`<div class="equipment-subsection"><h4>变身者</h4><div class="relation-links">${userChars.map(c=>relationCard(characterDetailHref(c.id),'CHARACTER',c.name,markHtml(c,'character','relation-mark'))).join('')}</div></div>`:''}${transformItems.length?`<div class="equipment-subsection"><h4>变身系统</h4><div class="relation-links">${transformItems.map(i=>relationCard(itemDetailHref(i.id),i.category,i.name,markHtml(i,'item','relation-mark'))).join('')}</div></div>`:''}${weaponItems.length?`<div class="equipment-subsection weapon-subsection"><h4>武器</h4><div class="relation-links">${weaponItems.map(i=>relationCard(itemDetailHref(i.id),'WEAPON',i.name,markHtml(i,'item','relation-mark'))).join('')}</div></div>`:''}</section>`:'';
     const callHtml=f.call?`<blockquote>${f.call}</blockquote>`:'';
     const stats=(f.stats||[]).map(s=>`<div class="stat"><b>${s.label}</b>${s.value}</div>`).join('');
     const abilities=(f.abilities||[]).map(a=>`<li>${a}</li>`).join('');
@@ -136,7 +184,7 @@ function rider(){
     const visualHtml=views.length?`<div class="image-switcher ${hasMultipleViews?'':'single-view'}" data-index="0"><div class="image-stage">${views.map((v,i)=>`<img src="${v.src}" alt="${v.alt||((f.cn||f.name)+' '+(v.label||'设定图'))}" class="switch-image ${i===0?'active':''}">`).join('')}</div>${hasMultipleViews?`<button class="image-arrow prev" aria-label="上一张">‹</button><button class="image-arrow next" aria-label="下一张">›</button><div class="image-dots">${views.map((v,i)=>`<button class="dot ${i===0?'active':''}">${v.label||('视图 '+(i+1))}</button>`).join('')}</div>`:''}</div>`:`<div class="image-empty">设定图暂未公开。</div>`;
     root.innerHTML=`
       <div class="rider-visual-panel">${visualHtml}</div>
-      <div class="rider-copy-panel"><div class="big-no">${f.no||currentEntity.no||''}</div><span class="eyebrow">${currentEntity.name} / ${sectionLabel}</span><h2 class="form-name">${f.name||currentEntity.en||''}</h2><h3>${f.cn||''}</h3><p class="form-intro">${f.intro||''}</p>${callHtml}<div class="stats">${stats}</div><section class="rider-info-block"><h3>能力总览</h3><ul>${abilities||'<li>资料暂未公开。</li>'}</ul></section><section class="rider-info-block"><h3>身体结构 / 编号部件</h3><div class="component-list">${components||'<p>资料暂未公开。</p>'}</div></section>${relationHtml}</div>`;
+      <div class="rider-copy-panel"><div class="rider-identity-header"><div class="rider-identity-meta"><div class="big-no">${f.no||currentEntity.no||''}</div><div class="entity-kicker rider-kicker"><span>${currentEntity.name} / ${sectionLabel}</span></div></div>${identityLogoHtml(currentEntity)}</div><h2 class="form-name">${f.name||currentEntity.en||''}</h2><h3>${f.cn||''}</h3><p class="form-intro">${f.intro||''}</p>${callHtml}<div class="stats">${stats}</div>${equipmentHtml}<section class="rider-info-block"><h3>能力总览</h3><ul>${abilities||'<li>资料暂未公开。</li>'}</ul></section><section class="rider-info-block"><h3>身体结构 / 编号部件</h3><div class="component-list">${components||'<p>资料暂未公开。</p>'}</div></section>${relationHtml}</div>`;
     const switcher=$('.image-switcher',root); if(switcher) setupImageSwitcher(switcher);
     const url=new URL(location.href);
     url.searchParams.set('section',section);
@@ -184,7 +232,49 @@ function setupImageSwitcher(root){
 
 function characterList(){
   const root=$('#character-list'); if(!root)return;
-  root.innerHTML=(D.characters||[]).filter(isPublished).map(x=>`<article class="detail-card" id="${x.id}"><img src="${x.image}" alt="${x.name}"><span class="eyebrow">登场人物</span><h2>${x.name}</h2><h3>${x.en}</h3><p>${x.intro}</p></article>`).join('');
+  root.innerHTML=(D.characters||[]).filter(isPublished).map(x=>`<a class="detail-card premium-card entity-list-card" href="detail.html?id=${encodeURIComponent(x.id)}"><img src="${thumbPath(x)}" alt="${x.name}"><span class="eyebrow">登场人物</span><h2>${x.name}</h2><h3>${x.en}</h3><p>${x.intro}</p><span class="detail-more">查看详细资料 →</span></a>`).join('');
+}
+
+function characterExplicitLinks(x){
+  if(!Array.isArray(x?.links)) return null;
+  return x.links.map(rel=>{
+    if(rel.type==='rider'){
+      const r=(D.riders||[]).find(v=>v.id===rel.riderId && isPublished(v));
+      const f=r?.forms?.find(v=>v.id===(rel.formId||'base'))||r?.forms?.[0];
+      if(!r||!f) return '';
+      return relationCard(riderFormHref(r.id,f.id),'骑士',rel.label||formLinkLabel(r,f));
+    }
+    if(rel.type==='monster'){
+      const m=monsterById(rel.monsterId); if(!m||!isPublished(m)) return '';
+      return relationCard(monsterDetailHref(m.id),'梦幻体',rel.label||m.name);
+    }
+    if(rel.type==='item'){
+      const i=itemById(rel.itemId); if(!i||!isPublished(i)) return '';
+      return relationCard(itemDetailHref(i.id),i.category,rel.label||i.name);
+    }
+    if(rel.type==='other'){
+      const e=(D.others||[]).find(v=>v.id===rel.entityId && isPublished(v));
+      const f=e?.forms?.find(v=>v.id===(rel.formId||'base'))||e?.forms?.[0];
+      if(!e||!f) return '';
+      const href=`../rider/index.html?section=other&category=${encodeURIComponent(rel.categoryId||e.categoryId||'')}&entity=${encodeURIComponent(e.id)}#${encodeURIComponent(f.id)}`;
+      return relationCard(href,'其他',rel.label||e.name);
+    }
+    return '';
+  }).join('');
+}
+
+function characterDetail(){
+  const root=$('#character-detail'); if(!root)return;
+  const list=(D.characters||[]).filter(isPublished);
+  const id=new URLSearchParams(location.search).get('id')||list[0]?.id;
+  const x=list.find(v=>v.id===id)||list[0]; if(!x){root.innerHTML='<p>没有公开人物资料。</p>';return;}
+  const explicitLinks=characterExplicitLinks(x);
+  const riderLinks=explicitLinks===null?autoCharacterRiders(x.id).map(o=>relationCard(riderFormHref(o.rider.id,o.form.id),'骑士',formLinkLabel(o.rider,o.form))).join(''):explicitLinks;
+  const monsterLinks=explicitLinks===null?autoCharacterMonsters(x.id).map(m=>relationCard(monsterDetailHref(m.id),'梦幻体',m.name)).join(''):'';
+  const itemLinks=explicitLinks===null?(x.items||[]).map(itemById).filter(Boolean).map(i=>relationCard(itemDetailHref(i.id),i.category,i.name)).join(''):'';
+  const extra=(x.profile||[]).map(p=>`<div class="stat"><b>${p.label}</b>${p.value}</div>`).join('');
+  root.innerHTML=`<div class="entity-hero material-card character-material"><div class="entity-portrait-wrap"><img class="entity-portrait" src="${detailImagePath(x)}" alt="${x.name}"></div><div class="entity-copy"><div class="entity-identity-top"><div class="entity-kicker"><span>CHARACTER FILE</span></div>${identityLogoHtml(x)}</div><h1>${x.name}</h1><h2>${x.en||''}</h2><p class="entity-lead">${x.intro||''}</p>${extra?`<div class="stats">${extra}</div>`:''}</div></div><section class="entity-section"><div class="ornament-title"><span>关联资料</span><h2>LINKED DATA</h2></div><div class="relation-links">${riderLinks||monsterLinks||itemLinks?`${riderLinks}${monsterLinks}${itemLinks}`:'<span class="relation-empty">无</span>'}</div></section>${x.details?`<section class="entity-section prose-card">${x.details}</section>`:''}`;
+  document.title=`${x.name} | 人物 | CROWN`;
 }
 
 function monsters(){
@@ -197,17 +287,111 @@ function monsters(){
   function renderTabs(){tabs.innerHTML=categories.map(c=>`<button class="monster-tab ${c.id===current.id?'active':''}" data-category="${c.id}">${c.name}<small>${c.en}</small></button>`).join('')}
   function renderCards(){
     const list=(D.monsters||[]).filter(m=>isPublished(m)&&m.categoryId===current.id);
-    root.innerHTML=list.map(x=>`<article class="detail-card monster-detail" id="${x.id}"><img src="${x.image}" alt="${x.name}"><span class="eyebrow">${current.name} / 梦幻体 No.${x.no}</span><h2>${x.name}</h2><h3>${x.en}</h3><p>${x.intro}</p></article>`).join('');
-    const hash=location.hash.slice(1); if(hash) document.getElementById(hash)?.scrollIntoView({block:'center'});
+    root.innerHTML=list.map(x=>`<a class="detail-card monster-detail premium-card entity-list-card" href="detail.html?id=${encodeURIComponent(x.id)}"><img src="${thumbPath(x)}" alt="${x.name}"><span class="eyebrow">${current.name} / 梦幻体 No.${x.no}</span><h2>${x.name}</h2><h3>${x.en}</h3><p>${x.intro}</p><span class="detail-more">查看详细资料 →</span></a>`).join('');
   }
   tabs.onclick=e=>{const b=e.target.closest('[data-category]');if(!b)return;current=categories.find(c=>c.id===b.dataset.category)||categories[0];renderTabs();renderCards();const u=new URL(location.href);u.searchParams.set('category',current.id);u.hash='';history.replaceState(null,'',u)};
   renderTabs();renderCards();
 }
 
+function monsterDetail(){
+  const root=$('#monster-detail'); if(!root)return;
+  const list=(D.monsters||[]).filter(isPublished);
+  const id=new URLSearchParams(location.search).get('id')||list[0]?.id;
+  const x=list.find(v=>v.id===id)||list[0];
+  if(!x){root.innerHTML='<p>没有公开梦幻体资料。</p>';return;}
+
+  const cat=categoryById(x.categoryId);
+  // 新数据使用 hostIds 数组；旧数据 hostId 仍然兼容。
+  const hostIds=Array.isArray(x.hostIds)
+    ? x.hostIds
+    : (x.hostId ? [x.hostId] : []);
+  const hosts=[...new Set(hostIds)]
+    .map(characterById)
+    .filter(host=>host && isPublished(host));
+
+  const stats=(x.stats||[]).map(s=>`<div class="stat"><b>${s.label}</b>${s.value}</div>`).join('');
+  const abilities=(x.abilities||[]).map(a=>`<li>${a}</li>`).join('');
+  const components=(x.components||[]).map(c=>`<div class="component-row"><strong>${c.no||''}</strong><div><b>${c.name||''}</b><p>${c.text||''}</p></div></div>`).join('');
+
+  const relations=[
+    ...hosts.map(host=>relationCard(
+      characterDetailHref(host.id),
+      '宿主 / 变身者',
+      host.name
+    )),
+    ...(x.items||[])
+      .map(itemById)
+      .filter(item=>item && isPublished(item))
+      .map(item=>relationCard(
+        itemDetailHref(item.id),
+        item.category,
+        item.name
+      ))
+  ].join('');
+
+  root.innerHTML=`
+    <div class="entity-hero material-card monster-material">
+      <div class="entity-portrait-wrap">
+        <img class="entity-portrait" src="${detailImagePath(x)}" alt="${x.name}">
+      </div>
+      <div class="entity-copy">
+        <div class="entity-identity-top">
+          <div class="entity-kicker"><span>${cat?.name||'梦幻体'} / No.${x.no||'—'}</span></div>
+          ${identityLogoHtml(x)}
+        </div>
+        <h1>${x.name}</h1>
+        <h2>${x.en||''}</h2>
+        <p class="entity-lead">${x.intro||''}</p>
+        ${stats?`<div class="stats">${stats}</div>`:''}
+      </div>
+    </div>
+    ${abilities?`<section class="entity-section">
+      <div class="ornament-title"><span>能力总览</span><h2>ABILITIES</h2></div>
+      <ul class="ability-list">${abilities}</ul>
+    </section>`:''}
+    ${components?`<section class="entity-section">
+      <div class="ornament-title"><span>身体结构 / 编号部件</span><h2>COMPONENTS</h2></div>
+      <div class="component-list">${components}</div>
+    </section>`:''}
+    <section class="entity-section">
+      <div class="ornament-title"><span>关联资料</span><h2>LINKED DATA</h2></div>
+      <div class="relation-links">${relations||'<span class="relation-empty">无</span>'}</div>
+    </section>`;
+  document.title=`${x.name} | 梦幻体 | CROWN`;
+}
+
 function items(){
   const root=$('#item-list'); if(!root)return;
-  const cats=[...new Set(D.items.map(x=>x.category))];
-  root.innerHTML=cats.map(cat=>`<section class="item-category"><div class="category-title"><span class="chess-file">${String.fromCharCode(65+cats.indexOf(cat))}</span><h2>${cat}</h2></div><div class="item-grid">${D.items.filter(x=>x.category===cat).map(x=>{const related=(x.relatedToys||[]).map(id=>D.toys?.find(t=>t.id===id)).filter(Boolean);const toyLinks=related.length?`<div class="related-toys">${related.map(t=>`<a class="button" href="../archive/item.html?id=${t.id}">查看 ${t.name} →</a>`).join('')}</div>`:'';return `<article class="item-card" id="${x.id}"><img src="${x.image}" alt="${x.name}"><div><span class="eyebrow">${x.category}</span><h3>${x.name}</h3><p class="en-name">${x.en}</p><p>${x.intro}</p>${toyLinks}</div></article>`}).join('')}</div></section>`).join('');
+  const all=(D.items||[]).filter(isPublished); const cats=[...new Set(all.map(x=>x.category))];
+  root.innerHTML=cats.map(cat=>`<section class="item-category"><div class="category-title"><span class="chess-file">${String.fromCharCode(65+cats.indexOf(cat))}</span><h2>${cat}</h2></div><div class="item-grid">${all.filter(x=>x.category===cat).map(x=>`<a class="item-card premium-card entity-list-card" href="detail.html?id=${encodeURIComponent(x.id)}"><img src="${thumbPath(x)}" alt="${x.name}"><div><span class="eyebrow">${x.category}</span><h3>${x.name}</h3><p class="en-name">${x.en}</p><p>${x.intro}</p><span class="detail-more">查看详细资料 →</span></div></a>`).join('')}</div></section>`).join('');
+}
+
+function itemDetail(){
+  const root=$('#item-detail'); if(!root)return;
+  const list=(D.items||[]).filter(isPublished); const id=new URLSearchParams(location.search).get('id')||list[0]?.id;
+  const x=list.find(v=>v.id===id)||list[0]; if(!x){root.innerHTML='<p>没有公开道具资料。</p>';return;}
+  // ownerLinks 存在时，按道具数据手动指定展示关联；不写时继续自动反查全部使用形态。
+  const ownerLinks=Array.isArray(x.ownerLinks)
+    ? x.ownerLinks.map(rel=>{
+        if(rel.type==='rider'){
+          const r=(D.riders||[]).find(v=>v.id===rel.riderId && isPublished(v));
+          const f=r?.forms?.find(v=>v.id===(rel.formId||'base'))||r?.forms?.[0];
+          if(!r||!f) return '';
+          return relationCard(riderFormHref(r.id,f.id),'使用形态',rel.label||formLinkLabel(r,f),markHtml(r,'rider','relation-mark'));
+        }
+        if(rel.type==='character'){
+          const c=characterById(rel.characterId);
+          if(!c||!isPublished(c)) return '';
+          return relationCard(characterDetailHref(c.id),'使用者',rel.label||c.name);
+        }
+        return '';
+      }).join('')
+    : autoItemOwners(x.id).map(o=>relationCard(riderFormHref(o.rider.id,o.form.id),'使用形态',formLinkLabel(o.rider,o.form),markHtml(o.rider,'rider','relation-mark'))).join('');
+  const toyLinks=(x.relatedToys||[]).map(tid=>D.toys?.find(t=>t.id===tid)).filter(Boolean).map(t=>relationCard(`../archive/item.html?id=${encodeURIComponent(t.id)}`,'玩具商品',t.name)).join('');
+  const stats=(x.stats||[]).map(s=>`<div class="stat"><b>${s.label}</b>${s.value}</div>`).join('');
+  const features=(x.features||[]).map(a=>`<li>${a}</li>`).join('');
+  root.innerHTML=`<div class="entity-hero material-card item-material"><div class="entity-portrait-wrap"><img class="entity-portrait contain" src="${detailImagePath(x)}" alt="${x.name}"></div><div class="entity-copy"><div class="entity-identity-top"><div class="entity-kicker"><span>${x.category}</span></div>${identityLogoHtml(x)}</div><h1>${x.name}</h1><h2>${x.en||''}</h2><p class="entity-lead">${x.intro||''}</p>${stats?`<div class="stats">${stats}</div>`:''}</div></div>${features?`<section class="entity-section"><div class="ornament-title"><span>功能</span><h2>FUNCTION</h2></div><ul class="ability-list">${features}</ul></section>`:''}<section class="entity-section"><div class="ornament-title"><span>使用者 / 对应形态</span><h2>USER</h2></div><div class="relation-links">${ownerLinks||'<span class="relation-empty">无</span>'}</div></section>${toyLinks?`<section class="entity-section"><div class="ornament-title"><span>相关商品</span><h2>TOY LINK</h2></div><div class="relation-links">${toyLinks}</div></section>`:''}`;
+  document.title=`${x.name} | 道具 | CROWN`;
 }
 
 function archive(){
@@ -221,7 +405,7 @@ function toyDetail(){
   const toys=D.toys||[]; if(!toys.length){root.innerHTML='<div class="manual-empty">目前还没有公开的伪玩具商品。</div>';return;}
   const id=new URLSearchParams(location.search).get('id')||toys[0].id; const x=toys.find(v=>v.id===id)||toys[0]; const manuals=x.manuals||[];
   const included=(x.includedItems||[]).map(id=>D.items.find(v=>v.id===id)).filter(Boolean);
-  const includedHtml=included.length?`<div class="toy-includes"><span class="eyebrow">套装内容</span><p>${included.map(v=>`<a href="../item/index.html#${v.id}">${v.name}</a>`).join(' / ')}</p></div>`:'';
+  const includedHtml=included.length?`<div class="toy-includes"><span class="eyebrow">套装内容</span><p>${included.map(v=>`<a href="../item/detail.html?id=${v.id}">${v.name}</a>`).join(' / ')}</p></div>`:'';
   root.innerHTML=`<section class="toy-hero"><div class="toy-package"><img src="${x.package}" alt="${x.name} 包装主视觉"></div><div class="toy-copy"><span class="eyebrow">${x.category}</span><h1>${x.name}</h1><h2>${x.en}</h2><p>${x.intro}</p>${includedHtml}<a class="button" href="../item/index.html">返回主站道具设定</a></div></section><section class="manual-viewer"><div class="manual-head"><div><span class="eyebrow">电子说明书</span><h2>说明书浏览</h2></div><div id="manual-count"></div></div><div class="manual-stage">${manuals.length?`<button class="manual-arrow prev">‹</button><img id="manual-image" src="${manuals[0]}" alt="${x.name} 说明书"><button class="manual-arrow next">›</button>`:`<div class="manual-empty">此商品的说明书图片尚未加入。</div>`}</div>${manuals.length?`<div class="manual-thumbs">${manuals.map((m,i)=>`<button data-i="${i}" class="${i===0?'active':''}">${String(i+1).padStart(2,'0')}</button>`).join('')}</div>`:''}</section>`;
   if(manuals.length){let i=0;const img=$('#manual-image',root),count=$('#manual-count',root),thumbs=$$('.manual-thumbs button',root);const show=n=>{i=(n+manuals.length)%manuals.length;img.src=manuals[i];count.textContent=`${i+1} / ${manuals.length}`;thumbs.forEach((b,k)=>b.classList.toggle('active',k===i))};$('.manual-arrow.prev',root).onclick=()=>show(i-1);$('.manual-arrow.next',root).onclick=()=>show(i+1);thumbs.forEach((b,k)=>b.onclick=()=>show(k));show(0)}
 }
@@ -272,4 +456,4 @@ function story(){
   render(location.hash.slice(1)||D.home?.storyId||stories[0].id);
 }
 
-document.addEventListener('DOMContentLoaded',()=>{header();home();rider();characterList();monsters();items();archive();toyDetail();story()});
+document.addEventListener('DOMContentLoaded',()=>{header();home();rider();characterList();characterDetail();monsters();monsterDetail();items();itemDetail();archive();toyDetail();story()});

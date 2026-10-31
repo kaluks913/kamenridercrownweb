@@ -23,6 +23,19 @@ window.CROWN_DATA = {
     monsterPageEnglish:'DREAMS',
     riderPageEnglish:'RIDER / OTHER'
   },
+
+  /* =========================================================
+     可选 Logo 注册表
+     - Logo 跟“骑士/阵营/系列”走，不再跟栏目走。
+     - 任意资料对象写 logoId:'crown' 才会显示 Crown Logo。
+     - 不写 logoId 就完全不显示 Logo。
+     - 以后第三位骑士出现时，只需在这里新增一项，例如 third:{...}。
+     - 也可以在单个对象上直接写 logo:'../assets/...' 覆盖注册表。
+     ========================================================= */
+  logos:{
+    crown:{ src:'../assets/images/logos/crown-logo.png', alt:'Crown Logo' },
+    tunnel:{ src:'../assets/images/logos/tunnel-logo.png', alt:'Tunnel Logo' }
+  },
   /* =========================================================
      本周主页精选：每周更新最常改这里
      ========================================================= */
@@ -32,28 +45,28 @@ window.CROWN_DATA = {
     // 首页骑士主视觉与骑士资料图完全分离。
     // 以后每周可以换成 assets/images/home/riders/week-02-xxx.png
     riderFeature:{
-      riderId:'tunnel',
-      formId:'base',
-      image:'assets/images/home/riders/week-03-tunnel.png',
-      note:'二号骑士：假面骑士Tunnel重磅登场！'
+      riderId:'crown',
+      formId:'sabaku',
+      image:'assets/images/home/riders/week-04-crown.png',
+      note:'以沙漠力量见长的假面骑士Crown·沙漠浪子形态！'
     },
 
     // 首页只展示这里指定的人物，不会把人物库全部塞上来。
-    characterIds:['moroboshi','ego','ijima'],
+    characterIds:['yukiko','ryota','shinri'],
 
     // 首页只展示这里指定的梦幻体。
-    monsterIds:['sabaku','happy'],
+    monsterIds:['sora','sad'],
 
     // 首页道具同理；想展示几个就写几个。
-    itemIds:['tunnel-driver','knight-core','sabaku-core'],
+    itemIds:['sabaku-core','knock-o','knock-core'],
 
     // 首页 STORY 指向哪一集。
-    storyId:'ep03'
+    storyId:'ep04'
   },
 
   news: [
     { date:'2026.10.24', tag:'官网', text:'小说目前已确认在刺猬猫独家连载' },
-    { date:'2026.10.24', tag:'故事', text:'第 03 集剧情页面公开' },
+    { date:'2026.10.31', tag:'故事', text:'第 04 集剧情页面公开' },
     { date:'2026.10.24', tag:'道具', text:'二号骑士Tunnel资料公开' },
     { date:'2026.10.06', tag:'官网', text:'《假面骑士 Crown》官方网站开放' }
   ],
@@ -66,19 +79,21 @@ window.CROWN_DATA = {
   riders:[
     {
       id:'crown',
+      logoId:'crown',
       published:true,
-      no:'01',
+      no:'KING',
       name:'假面骑士 Crown',
       en:'KAMEN RIDER CROWN',
       catch:'感受吧！信念的力量。',
       forms:[
         {
-          id:'base', no:'01', name:'CROWN', cn:'基础形态',
+          id:'base', no:'01', name:'CROWN', cn:'基础形态', linkLabel:'假面骑士 Crown',
           full:'../assets/images/riders/crown/crown-base-full.png',
           head:'../assets/images/riders/crown/crown-base-head.png',
           call:'Volsaro KING！神秘之蛇！KAMEN RIDER CROWN！',
           intro:'由诸星勇志使用皇冠驱动器与国王捷能充芯构筑的均衡形态。兼具攻防与机动性，在国际象棋体系中对应“国王”。',
           relations:[{section:'other', categoryId:'guardian', entityId:'tasm', formId:'base', label:'灵魄守护兽 塔斯木 / 基础形态'}],
+          equipment:{users:['moroboshi'], transformation:['crown-driver','king-core'], weapons:['knock-o']},
           stats:[
             { label:'身高', value:'195.0 cm' },
             { label:'体重', value:'92.0 kg' },
@@ -110,12 +125,13 @@ window.CROWN_DATA = {
           head:'../assets/images/riders/crown/crown-sabaku-head.png',
           call:'Volsaro SABAKU！白色浪人！SABAKU CROWN！',
           intro:'使用沙漠捷能充芯变身。能够操纵具备腐蚀性的白色沙尘，并以轻量装甲提升机动性。',
+          equipment:{users:['moroboshi'], transformation:['sabaku-core'], weapons:['knock-o']},
           stats:[
             {label:'身高',value:'195.0 cm'}, {label:'体重',value:'89.0 kg'},
             {label:'拳力',value:'10.5 t'}, {label:'踢力',value:'15.0 t'},
             {label:'跳跃力',value:'35.0 m'}, {label:'跑速',value:'100 m / 4.8 s'}
           ],
-          abilities:['终焉必杀：荒漠熨杀（Sabaku-thermia Ironing）是配合武器击倒拳铳使出的必杀技，白沙汇聚在击倒拳铳的熨面，在攻击到敌人的瞬间以极快的速度腐蚀敌人的身体，以达到一击破防的效果。'],
+          abilities:['终焉必杀：沙漠皇家审判（Sabaku Royal Sentence）可以将全部压缩能量灌注于腿中，裹挟大量白沙踢向眼前的敌人，对敌人造成大量腐蚀效果。', '终焉必杀：荒漠熨杀（Sabaku-thermia Ironing）是配合武器击倒拳铳使出的必杀技，白沙汇聚在击倒拳铳的熨面，在攻击到敌人的瞬间以极快的速度腐蚀敌人的身体，以达到一击破防的效果。'],
           components:[
             {no:'01',name:'流沙盔甲',text:'夸张的蓝白色肩甲，其中间隙藏有【沙尘发生器】——将空气中水分和微量矿物转化为白色沙尘的核心装置，可用于紧急回避或制造沙幕。'},
             {no:'02',name:'荒芜披挂',text:'由隔热粒子组成的胸部铠甲，防止腐蚀沙尘反噬变身者，这一隔热粒子以胸甲为中心扩散到假面骑士Crown的全身各处。受到重击时，胸甲会主动崩解一部分外层装甲化为白沙消散，以卸除冲击力。'},
@@ -129,6 +145,7 @@ window.CROWN_DATA = {
           head:'../assets/images/riders/crown/crown-sora-head.png',
           call:'Volsaro SORA！飞行指挥官！SORA CROWN！',
           intro:'使用天空捷能充芯变身。拥有飞行能力与大量隐藏弹药口，适合广域空战与持续轰炸。',
+          equipment:{users:['moroboshi'], transformation:['sora-core'], weapons:['knock-o']},
           stats:[
             {label:'身高',value:'197.0 cm'}, {label:'体重',value:'98.5 kg'},
             {label:'拳力',value:'9.2 t'}, {label:'踢力',value:'16.0 t'},
@@ -151,6 +168,7 @@ window.CROWN_DATA = {
           head:'../assets/images/riders/crown/crown-kaze-head.png',
           call:'Volsaro KAZE！狂风游侠！KAZE CROWN！',
           intro:'使用狂风捷能充芯变身。能够操纵风速与风力，并利用风场修正射击弹道。',
+          equipment:{users:['moroboshi'], transformation:['kaze-core'], weapons:['knock-o']},
           stats:[
             {label:'身高',value:'193.0 cm'}, {label:'体重',value:'89.0 kg'},
             {label:'拳力',value:'7.5 t'}, {label:'踢力',value:'11.0 t'},
@@ -169,19 +187,21 @@ window.CROWN_DATA = {
     },
     {
       id:'tunnel',
+      logoId:'tunnel',
       published:true,
-      no:'01',
+      no:'KNIGHT',
       name:'假面骑士 Tunnel',
       en:'KAMEN RIDER TUNNEL',
       catch:'或者，你可以称呼我为——假面骑士Tunnel。',
       forms:[
         {
-          id:'base', no:'01', name:'CROWN', cn:'基础形态',
+          id:'base', no:'01', name:'CROWN', cn:'基础形态', linkLabel:'假面骑士 Tunnel',
           full:'../assets/images/riders/tunnel/tunnel-base-full.png',
           head:'../assets/images/riders/tunnel/tunnel-base-head.png',
           call:'Sitsugiru KNIGHT！速度之猿！KAMEN RIDER TUNNEL！',
           intro:'由长谷川映悟使用隧道驱动器与骑士捷能充芯构筑的高机动形态。擅长以高机动性战斗，在国际象棋体系中对应“骑士”。',
           relations:[{section:'other', categoryId:'guardian', entityId:'vulki', formId:'base', label:'灵魄守护兽 乌尔奇 / 基础形态'}],
+          equipment:{users:['ego'], transformation:['tunnel-driver','knight-core'], weapons:['zen-guts']},
           stats:[
             { label: '身高', value: '198.0 cm' }, // 重装皮套显得修长且魁梧
             { label: '体重', value: '106.5 kg' }, // 包含涡轮引擎、排气管背包等金属重装，体重增加
@@ -223,7 +243,7 @@ window.CROWN_DATA = {
 
   others:[
     {
-      id:'tasm', categoryId:'guardian', published:true, no:'G01',
+      id:'tasm', categoryId:'guardian', published:true, no:'KING',
       name:'塔斯木', en:'TASM', catch:'与 Crown 缔结灵魂契约的灵魄守护兽。',
       forms:[
         {
@@ -249,11 +269,31 @@ window.CROWN_DATA = {
             {no:'05',name:'蓝鳞翘尾',text:'高速行驶时提供下压力，保持平衡。在蛇形态下，这部分会彻底舒展，变成一条强韧的机械长尾，能像鞭子一样抽碎怪人，或者用来缠绕敌人。'}
           ],
           relations:[{section:'rider', riderId:'crown', formId:'base', label:'假面骑士 Crown / 基础形态'}]
+        },
+        {
+          id:'sabaku', no:'02', name:'TASM', cn:'沙漠形态',
+          // 每个形态的视图数量与名称都可自由定义。
+          // 基础形态有蛇模式与摩托模式，因此显示切换按钮和左右箭头。
+          views:[
+            {src:'../assets/images/others/tasm/tasm-sabaku-snake.png'}
+          ],
+          intro:'灵魄守护兽塔斯木的沙漠形态。通过和契约对象心意相通实体化诞生的存在。',
+          call:'',
+          stats:[
+            {label:'分类', value:'灵魄守护兽'},
+            {label:'契约对象', value:'诸星勇志 / Crown'}
+          ],
+          abilities:['灵魂契约：平常状态下，灵魄守护兽将以纯粹意识的方式存在于对象的脑内，和契约对象进行私密的心灵对话。'],
+          components:[
+            {no:'01',name:'沙王巨耳',text:'增强了塔斯木的感知能力，可喷射出腐蚀性的高压沙流作为攻击手段。'},
+            {no:'02',name:'聚沙蛇舌',text:'沙漠形态的塔斯木可以通过该器官吐出无害的沙粒，用以构筑各种建筑结构，以方便行动。'}
+          ],
+          relations:[{section:'rider', riderId:'crown', formId:'sabaku', label:'假面骑士 Crown / 沙漠形态'}]
         }
       ]
     },
     {
-      id:'vulki', categoryId:'guardian', published:true, no:'G01',
+      id:'vulki', categoryId:'guardian', published:true, no:'KNIGHT',
       name:'乌尔奇', en:'VULKI', catch:'与 Tunnel 缔结灵魂契约的灵魄守护兽。',
       forms:[
         {
@@ -283,10 +323,28 @@ window.CROWN_DATA = {
     }
   ],
 
+  /* v0.73 图片字段：
+     image = 详情页大图
+     thumb = 列表/首页缩略图（可选，不写则自动使用 image）
+     logoId = 详情页可选 1:1 Logo（不写则完全不显示）
+  */
+  // 人物详情页关联资料：
+  // 写 links:[...] = 完全按这里显示，不再自动列出所有变身形态。
+  // 不写 links = 保留旧的自动反查逻辑。
+  // 可用 type: 'rider' / 'monster' / 'item' / 'other'。
   characters:[
-    {id:'moroboshi', published:true, name:'诸星勇志', en:'MOROBOSHI YUJI', image:'../assets/images/characters/moroboshi-yuji.jpg', intro:'主人公，新天地服务中心的技术修复员。被灵魄守护兽塔斯木选中后，拥有成为假面骑士Crown的力量。'},
-    {id:'ego', published:true, name:'长谷川映悟', en:'HASEGAWA EGO', image:'../assets/images/characters/hasegawa-ego.jpg', intro:'100%侦探事务所的侦探。被灵魄守护兽乌尔奇选中后，拥有成为假面骑士Tunnel的力量。'},
-    {id:'ijima', published:true, name:'饭岛健一', en:'IJIMA KENICHI', image:'../assets/images/characters/ijima-kenichi.jpg', intro:'中央新闻社的现役记者，诸星勇志的好友。被梦幻体的力量所侵蚀。'},
+    {id:'moroboshi', published:true, name:'诸星勇志', en:'MOROBOSHI YUJI', image:'../assets/images/characters/moroboshi-yuji.jpg', intro:'主人公，新天地服务中心的技术修复员。被灵魄守护兽塔斯木选中后，拥有成为假面骑士Crown的力量。',
+      links:[
+        {type:'rider', riderId:'crown', formId:'base', label:'假面骑士 Crown'}
+      ]},
+    {id:'ego', published:true, name:'长谷川映悟', en:'HASEGAWA EGO', image:'../assets/images/characters/hasegawa-ego.jpg', intro:'100%侦探事务所的侦探。被灵魄守护兽乌尔奇选中后，拥有成为假面骑士Tunnel的力量。',
+      links:[
+        {type:'rider', riderId:'tunnel', formId:'base', label:'假面骑士 Tunnel'}
+      ]},
+    {id:'yukiko', published:true, name:'游隼雪子', en:'HAYABUSA YUKIKO', image:'../assets/images/characters/hayabusa-yukiko.jpg', intro:'中央新闻社的现役记者，游隼亮太的女儿。不知何故保留了饭岛的记忆，为寻找父亲和诸星达成合作。'},
+    {id:'ryota', published:true, name:'游隼亮太', en:'HAYABUSA RYOTA', image:'../assets/images/characters/hayabusa-ryota.jpg', intro:'极限物流的原快递员，不知何故成为天空梦幻体。'},
+    {id:'shinri', published:true, name:'竹部真丽', en:'TAKEBU SHINRI', image:'../assets/images/characters/takebu-shinri.jpg', intro:'极限物流的主管，强迫员工购买功能饮料，对帅哥没有任何抵抗力。'},
+    {id:'ijima', published:true, name:'饭岛健一', en:'IJIMA KENICHI', image:'../assets/images/characters/ijima-kenichi.jpg', intro:'原中央新闻社记者，诸星勇志的好友。成为梦幻体被击败后，变成了拉面店的服务生。'},
     {id:'ryougiku', published:true, name:'良菊俊彦', en:'RYOUGIKU TOSHIHIKO', image:'../assets/images/characters/ryougiku-toshihiko.jpg', intro:'诸星曾经的工友，有一个妻子和女儿，以梦幻体身份死去后变成了孤家寡人。'},
     {id:'yamaguchi', published:true, name:'山口孝明', en:'YAMAGUCHI HYOMEI', image:'../assets/images/characters/yamaguchi-hyomei.jpg', intro:'诸星曾经的工友，曾喜爱诗歌，以梦幻体身份死去后成为一名律师。'},
     {id:'sato', published:true, name:'佐藤久间', en:'SATO KUMA', image:'../assets/images/characters/sato-kuma.jpg', intro:'上杉百合子的恋人。百合子突然死亡后，他被卷入围绕林野财团发生的一系列事件，并在巨大的悲愤中发生异变。'},
@@ -301,31 +359,38 @@ window.CROWN_DATA = {
      ========================================================= */
   monsterCategories:[
     {id:'anger', name:'愤怒', en:'ANGER', published:true},
-    {id:'happy', name:'愉悦', en:'HAPPY', published:true}
+    {id:'happy', name:'愉悦', en:'HAPPY', published:true},
+    {id:'afraid', name:'恐惧', en:'AFRAID', published:true},
+    {id:'sad', name:'悲伤', en:'SAD', published:true}
 
     // 以后公开时再增加：愉悦 / 恐惧 / 悲伤 / 执政官 / 其他……
   ],
 
+  /* v0.73 梦幻体也支持 image + thumb；建议 thumb 使用更紧凑构图。 */
   monsters:[
-    {id:'anger', categoryId:'anger', published:true, no:'001', name:'愤怒梦幻体', en:'ANGER DREAMS', image:'../assets/images/monsters/anger-dream-phantom.png', intro:'由强烈愤怒所催生的梦幻体，其能力与宿主不断膨胀的愤怒情绪紧密相连。'},
-    {id:'wind', categoryId:'anger', published:true, no:'002', name:'狂风梦幻体', en:'KAZE DREAMS', image:'../assets/images/monsters/wind-dream-phantom.png', intro:'能够操纵风元素的梦幻体，由佐藤久间变身而成,可以使用风弹进行攻击。'},
-    {id:'happy', categoryId:'happy', published:true, no:'001', name:'愉悦梦幻体', en:'HAPPY DREAMS', image:'../assets/images/monsters/happy-dream-phantom.png', intro:'由强烈愉悦所催生的梦幻体，其能力与宿主不断膨胀的愉悦情绪紧密相连。'},
-    {id:'sabaku', categoryId:'happy', published:true, no:'002', name:'沙漠梦幻体', en:'SABAKU DREAMS', image:'../assets/images/monsters/sand-dream-phantom.png', intro:'能够操纵沙元素的梦幻体，由饭岛健一变身而成,可以操纵具有腐蚀能力的白沙进行攻击。'}
+    {id:'anger', categoryId:'anger', published:true, no:'001', name:'愤怒梦幻体', en:'ANGER DREAMS', image:'../assets/images/monsters/anger-dream-phantom.png', intro:'由强烈愤怒所催生的梦幻体，其能力与宿主不断膨胀的愤怒情绪紧密相连，武器是一把砍刀。'},
+    {id:'wind', categoryId:'anger', hostId:'sato', published:true, no:'002', name:'狂风梦幻体', en:'KAZE DREAMS', image:'../assets/images/monsters/wind-dream-phantom.png', intro:'能够操纵风元素的梦幻体，由佐藤久间变身而成,可以使用风弹进行攻击。'},
+    {id:'happy', categoryId:'happy',hostIds:['ryougiku','yamaguchi'], published:true, no:'001', name:'愉悦梦幻体', en:'HAPPY DREAMS', image:'../assets/images/monsters/happy-dream-phantom.png', intro:'由强烈愉悦所催生的梦幻体，其能力与宿主不断膨胀的愉悦情绪紧密相连，武器是一把骨扇。'},
+    {id:'sabaku', categoryId:'happy', hostId:'ijima', published:true, no:'002', name:'沙漠梦幻体', en:'SABAKU DREAMS', image:'../assets/images/monsters/sand-dream-phantom.png', intro:'能够操纵沙元素的梦幻体，由饭岛健一变身而成,可以操纵具有腐蚀能力的白沙进行攻击。'},
+    {id:'afraid', categoryId:'afraid', published:true, no:'001', name:'恐惧梦幻体', en:'AFRAID DREAMS', image:'../assets/images/monsters/afraid-dream-phantom.png', intro:'由强烈恐惧所催生的梦幻体，其能力与宿主不断膨胀的恐惧情绪紧密相连，以双爪作为武器。'},
+    {id:'sad', categoryId:'sad', published:true, no:'001', name:'悲伤梦幻体', en:'SAD DREAMS', image:'../assets/images/monsters/sad-dream-phantom.png', intro:'由强烈悲伤所催生的梦幻体，其能力与宿主不断膨胀的悲伤情绪紧密相连，武器是一把袖剑。'},
+    {id:'sora', categoryId:'sad',hostId:'ryota',  published:true, no:'002', name:'天空梦幻体', en:'SORA DREAMS', image:'../assets/images/monsters/sora-dream-phantom.png', intro:'能够操纵天空元素的梦幻体，由游隼亮太变身而成,可以操纵具有飞行能力和云团控制能力。'},
   ],
 
+  /* v0.73 道具同样可选 thumb；详情页仍使用 image。 */
   items:[
-    {id:'crown-driver', category:'变身系统', name:'皇冠驱动器', en:'CROWN DRIVER', image:'../assets/images/items/crown-driver.png', intro:'Crown 使用的变身系统。与不同捷能充芯联动，可启动变身、武器召唤与必杀系统。', relatedToys:['crown-driver-set']},
-    {id:'king-core', category:'捷能充芯', name:'国王捷能充芯', en:'KING ENERGENCY CHARGE', image:'../assets/images/items/king-charge-core.png', intro:'假面骑士Crown·基础形态对应的捷能充芯。', relatedToys:[]},
-    {id:'tunnel-driver', category:'变身系统', name:'隧道驱动器', en:'TUNNEL DRIVER', image:'../assets/images/items/tunnel-driver.png', intro:'Tunnel 使用的变身系统。与不同捷能充芯联动，可启动变身、武器召唤与必杀系统。', relatedToys:['tunnel-driver-set']},
-    {id:'knight-core', category:'捷能充芯', name:'骑士捷能充芯', en:'KNIGHT ENERGENCY CHARGE', image:'../assets/images/items/knight-charge-core.png', intro:'假面骑士Tunnel·基础形态对应的捷能充芯。', relatedToys:[]},
-    {id:'sabaku-core', category:'捷能充芯', name:'沙漠捷能充芯', en:'SABAKU ENERGENCY CHARGE', image:'../assets/images/items/sabaku-charge-core.png', intro:'沙漠浪子形态对应的捷能充芯。', relatedToys:[]},
-    {id:'sora-core', category:'捷能充芯', name:'天空捷能充芯', en:'SORA ENERGENCY CHARGE', image:'../assets/images/items/sora-charge-core.png', intro:'天空指挥官形态对应的捷能充芯。', relatedToys:[]},
-    {id:'kaze-core', category:'捷能充芯', name:'狂风捷能充芯', en:'KAZE ENERGENCY CHARGE', image:'../assets/images/items/kaze-charge-core.png', intro:'狂风游侠形态对应的捷能充芯。', relatedToys:[]},
-    {id:'knock-core', category:'捷能充芯', name:'击倒拳铳武器充芯', en:'KNOCK-O ENERGENCY CHARGE', image:'../assets/images/items/knock-charge-core.png', intro:'能够召唤武器【击倒拳铳】的捷能充芯。', relatedToys:[]},
-    {id:'zn-core', category:'捷能充芯', name:'禅&勇武器充芯', en:'ZE-N & GUT-S ENERGENCY CHARGE', image:'../assets/images/items/zn-charge-core.png', intro:'能够召唤双刀型武器【禅】和【勇】的捷能充芯。', relatedToys:[]},
+    {id:'crown-driver', logoId:'crown', category:'变身系统', name:'皇冠驱动器', en:'CROWN DRIVER', image:'../assets/images/items/crown-driver.png', intro:'Crown 使用的变身系统。与不同捷能充芯联动，可启动变身、武器召唤与必杀系统。', relatedToys:['crown-driver-set']},
+    {id:'king-core', logoId:'crown', category:'捷能充芯', name:'国王捷能充芯', en:'KING ENERGENCY CHARGE', image:'../assets/images/items/king-charge-core.png', intro:'假面骑士Crown·基础形态对应的捷能充芯。', relatedToys:[]},
+    {id:'tunnel-driver', logoId:'tunnel', category:'变身系统', name:'隧道驱动器', en:'TUNNEL DRIVER', image:'../assets/images/items/tunnel-driver.png', intro:'Tunnel 使用的变身系统。与不同捷能充芯联动，可启动变身、武器召唤与必杀系统。', relatedToys:['tunnel-driver-set']},
+    {id:'knight-core', logoId:'tunnel', category:'捷能充芯', name:'骑士捷能充芯', en:'KNIGHT ENERGENCY CHARGE', image:'../assets/images/items/knight-charge-core.png', intro:'假面骑士Tunnel·基础形态对应的捷能充芯。', relatedToys:[]},
+    {id:'sabaku-core', logoId:'crown', category:'捷能充芯', name:'沙漠捷能充芯', en:'SABAKU ENERGENCY CHARGE', image:'../assets/images/items/sabaku-charge-core.png', intro:'沙漠浪子形态对应的捷能充芯。', relatedToys:[]},
+    {id:'sora-core', logoId:'crown', category:'捷能充芯', name:'天空捷能充芯', en:'SORA ENERGENCY CHARGE', image:'../assets/images/items/sora-charge-core.png', intro:'天空指挥官形态对应的捷能充芯。', relatedToys:[]},
+    {id:'kaze-core', logoId:'crown', category:'捷能充芯', name:'狂风捷能充芯', en:'KAZE ENERGENCY CHARGE', image:'../assets/images/items/kaze-charge-core.png', intro:'狂风游侠形态对应的捷能充芯。', relatedToys:[]},
+    {id:'knock-core', logoId:'crown', category:'捷能充芯', name:'击倒拳铳武器充芯', en:'KNOCK-O ENERGENCY CHARGE', image:'../assets/images/items/knock-charge-core.png', intro:'能够召唤武器【击倒拳铳】的捷能充芯。', relatedToys:[], ownerLinks:[{type:'rider', riderId:'crown', formId:'base', label:'假面骑士 Crown'}]},
+    {id:'zn-core', logoId:'tunnel', category:'捷能充芯', name:'禅&勇武器充芯', en:'ZE-N & GUT-S ENERGENCY CHARGE', image:'../assets/images/items/zn-charge-core.png', intro:'能够召唤双刀型武器【禅】和【勇】的捷能充芯。', relatedToys:[], ownerLinks:[{type:'rider', riderId:'tunnel', formId:'base', label:'假面骑士 Tunnel'}]},
     {id:'land-core', category:'捷能充芯', name:'？？？捷能充芯', en:'ENERGENCY CHARGE', image:'../assets/images/items/land-charge-core.png', intro:'神秘人获得的捷能充芯。', relatedToys:[]},
-    {id:'knock-o', category:'武器', name:'击倒拳铳', en:'KNOCK-O', image:'../assets/images/items/weapons/knock-o.png', intro:'Crown 的初始二用型武器，可在拳模式与铳模式之间切换。', relatedToys:['knock-o-set']},
-    {id:'zen-guts', category:'武器', name:'能量剑刃禅&能量剑刃勇', en:'ZE-N & GUT-S', image:'../assets/images/items/weapons/zen-guts.png', intro:'Tunnel 的初始武器，平常以双刀模式使用。', relatedToys:[]}
+    {id:'knock-o', logoId:'crown', category:'武器', name:'击倒拳铳', en:'KNOCK-O', image:'../assets/images/items/weapons/knock-o.png', intro:'Crown 的初始二用型武器，可在拳模式与铳模式之间切换。', ownerLinks:[{type:'rider', riderId:'crown', formId:'base', label:'假面骑士 Crown'}], relatedToys:['knock-o-set']},
+    {id:'zen-guts', logoId:'tunnel', category:'武器', name:'能量剑刃禅&能量剑刃勇', en:'ZE-N & GUT-S', image:'../assets/images/items/weapons/zen-guts.png', intro:'Tunnel 的初始武器，平常以双刀模式使用。', relatedToys:[]}
   ],
 
   toys:[
@@ -346,7 +411,13 @@ window.CROWN_DATA = {
       package:'toys/tunnel-driver-package.jpg', intro:'隧道驱动器与骑士捷能充芯组成的变身腰带套装。',
       includedItems:['tunnel-driver','knight-core'],
       manuals:['manuals/tunnel-driver/01.jpg','manuals/tunnel-driver/02.jpg']
-    }
+    },
+    {
+      id:'crown-figure-01', name:'棋盘格人偶系列 01：假面骑士Crown', en:'CHESS-SET FIGURE 01', category:'软胶人偶',
+      package:'toys/crown-figure-01.jpg', intro:'假面骑士Crown的软胶人偶。',
+      includedItems:[],
+      manuals:['manuals/crown-figure-01/01.jpg']
+    },
   ],
 
   stories:[
@@ -408,9 +479,35 @@ window.CROWN_DATA = {
         { type:'heading', text:'作者想说' },
         { type:'paragraph', html:'<strong>虽然之前给了希望，但目前并没有办法让人恢复呢（笑）</strong> <br>对我来说，《假面骑士铠武》是对我进行同人创作意义深远的作品，因为最早尝试画同人就是从蘑菇锁种开始呢（笑）。<br>同样的，《铠武》中没有能够让怪人变回人形，这样悲剧的宿命感，反而让人感到缺憾。<br> 我们要塑造的是一个极其黑暗的骑士世界，为此，童话一样的展开可能会改变我们的主基调。<br>虽说如果按照TV规格，如此尺度的剧情肯定是无法实行的啦（笑）。' },
         { type:'divider' },
+        { type:'paragraph', html:'<strong>——饭岛健一的前世今生</strong> <br>实际上，10年前的《假面骑士crown》中，并没有沙漠元素的存在呢（笑）。<br>在原作中，饭岛健一的身份和如今大不相同呢。不过为了让故事线更加紧凑，我修改了整条故事的内容。<br> 以假面骑士麦斯作比，曾经饭岛的人设就像是华武利呢（笑）。' },
+        { type:'divider' },
         { type:'paragraph', html:'<strong>为什么选择刺猬猫进行最终的连载？</strong> <br>说实话，之前试点连载的四个平台各有优劣。<br>我一开始更偏向于（哔——），不过（哔——）随后出台了制裁同人文的新制度，不由得让人心如死灰。<br> 除此以外，我个人也认为我的文笔不够好，因此还是得配上图文作为调剂。而这一点，恐怕目前只有刺猬猫能做到了。<br>因此，还请各位前往了其他平台观看的书友们（如果现在有的话），能够转战刺猬猫，感谢大家的理解。' },
         { type:'divider' },
         { type:'callout', title:'对观众说的话', html:'接下来，还请大家继续关注假面骑士Crown的后续内容，更多真相将会在后续的集数中慢慢揭晓。目前打算单单在刺猬猫继续连载下去，还请大家多多支持。' },
+        { type:'paragraph', html:'<em>作者：一文字英雄</em>' }
+      ],
+
+      // 旧字段保留兼容；当 content 不存在或为空时，网页才会读取下面两项。
+      columnTitle:'第 01 集补充文章',
+      column:'本页的小作文、设定补充与作者文章都放在 STORY 内。之后每周新增一集对象即可，首页通过 home.storyId 决定本周展示哪一集。'
+    },
+    {
+      id:'ep04', episode:'04', title:'游隼·CAGED BIRD', date:'2026.10.31',
+      image:'../assets/images/story/ep04/episode-04.jpg',
+      summary:'诸星在直面“重生”挚友的残酷现实后，与保有记忆的记者游隼雪子结成同盟潜入“极限物流”，却在与长谷川的共斗中，遇见了此前未曾见过的梦幻体......',
+
+      // STORY 富文本正文：顺序就是网页显示顺序。每一集的块数量、类型都可以完全不同。
+      // paragraph 的 html 支持 <strong>加粗</strong>、<em>斜体</em>、<br>换行。
+      content:[
+        { type:'guide', title:'人物关系', src:'../assets/images/story/ep04/guide.jpg' },
+        { type:'heading', text:'作者想说' },
+        { type:'paragraph', html:'<strong>——写第四集的时候，最让我兴奋的是，下级梦幻体一族终于在本集欢聚一堂。</strong> <br>在前三集的时候，我们见到了佐藤役使的愤怒梦幻体和饭岛役使的愉悦梦幻体。而如今，剩余两种情绪也总算在本集出现。<br>除了代表红色的愤怒，和黄色的愉悦，梦幻体一族还拥有绿色的恐惧梦幻体和蓝色的悲伤梦幻体。<br> 这四种梦幻体，便是没有驾驭元素力量的下级梦幻体种类。和愤怒、愉悦一样，剩余两只梦幻体也是由至高赞词设计。' },
+        { type:'image', src:'../assets/images/story/ep04/dreams-con.jpg', label:'', caption:'四位下级梦幻体的设计原稿 by 至高赞词。', wide:true },
+        { type:'divider' },
+        { type:'paragraph', html:'<strong>——游隼亮太的前世今生。</strong> <br>就像饭岛健一一样，10年前的游隼亮太和现在的差别相当之大。在2016版本中，游隼亮太是一个热衷于投资航天学的公司老总。<br>因为对航天成果高兴，被梦幻体夺舍成为怪人。不过在目前的世界观中，飞机都不会存在，更遑论火箭呢（笑）。' },
+        { type:'image', src:'../assets/images/story/ep04/sora-con.jpg', label:'', caption:'天空梦幻体 2016 vs 2026，设计 by kaluks。', wide:true },
+        { type:'divider' },
+        { type:'callout', title:'对观众说的话', html:'接下来，还请大家继续关注假面骑士Crown的后续内容，更多真相将会在后续的集数中慢慢揭晓。' },
         { type:'paragraph', html:'<em>作者：一文字英雄</em>' }
       ],
 
